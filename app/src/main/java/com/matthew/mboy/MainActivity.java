@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
     private void startEmulator(final String path) {
         final SurfaceView sv = findViewById(R.id.surfaceView);
         final Context context = this;
-        AsyncTask.execute(new Runnable() {
+
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-        });
+        }).start();
 
         updateFPS();
     }

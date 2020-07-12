@@ -9,17 +9,38 @@
 #include "AndroidGUI.h"
 #include "../../../../../../Library/Android/sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include/android/native_window.h"
 #include "GPU.h"
+#include <APU.h>
 
 void AndroidGUI::displayBuffer(uint32 *pixels) {
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    uint32 duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - lastFrame).count();
+    memcpy(this->pixels, pixels, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint32));
+}
 
-    if(duration < 16) {
-        return;
+void AndroidGUI::displayFPS(uint16 fps) {
+    this->fps = fps;
+}
+
+AndroidGUI::AndroidGUI(JNIEnv *env, jobject surfaceView) {
+    this->env = env;
+    this->surfaceView = surfaceView;
+
+    oboe::AudioStreamBuilder builder;
+    builder.setChannelCount(1);
+    builder.setFormat(oboe::AudioFormat::Float);
+    builder.setSampleRate(SAMPLE_RATE);
+    oboe::Result result = builder.openManagedStream(managedStream);
+
+    if (result != oboe::Result::OK) {
+        //LOGE("Failed to create stream. Error: %s", oboe::convertToText(result));
     }
 
-    lastFrame = std::chrono::steady_clock::now();
+    managedStream->requestStart();
+}
 
+void AndroidGUI::playAudio(float *samples, uint16 count) {
+    managedStream->write(samples, count, 1000000000);
+}
+
+void AndroidGUI::render(JNIEnv* env) {
     ANativeWindow *window = ANativeWindow_fromSurface(env, surfaceView);
 
     if (NULL == window) {
@@ -42,27 +63,18 @@ void AndroidGUI::displayBuffer(uint32 *pixels) {
         throw std::invalid_argument("unable to lock native window");
     }
 
-    memcpy(buffer.bits, pixels, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint32));
+    memcpy(buffer.bits, this->pixels, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint32));
 
     ANativeWindow_unlockAndPost(window);
     ANativeWindow_release(window);
 
     renderFrameCount += 1;
     std::chrono::steady_clock::time_point renderEnd = std::chrono::steady_clock::now();
-    uint32 renderDuration = std::chrono::duration_cast<std::chrono::milliseconds>(end - renderTimer).count();
+    uint32 renderDuration = std::chrono::duration_cast<std::chrono::milliseconds>(renderEnd - renderTimer).count();
 
     if(renderDuration > 1000) {
         renderFps = renderFrameCount;
         renderFrameCount = 0;
         renderTimer = std::chrono::steady_clock::now();
     }
-}
-
-void AndroidGUI::displayFPS(uint16 fps) {
-    this->fps = fps;
-}
-
-AndroidGUI::AndroidGUI(JNIEnv *env, jobject surfaceView) {
-    this->env = env;
-    this->surfaceView = surfaceView;
 }

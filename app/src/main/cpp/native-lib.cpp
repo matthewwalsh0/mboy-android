@@ -5,13 +5,27 @@
 #include "Rom.h"
 #include "Gameboy.h"
 #include "AndroidGUI.h"
+#include <thread>
 
 static AndroidGUI* gui;
+static JavaVM* jvm;
+static jobject globalSurface;
+
+static void render() {
+    JNIEnv* env;
+    jvm->AttachCurrentThread(&env, NULL);
+    while(true) {
+        gui->render(env);
+    }
+}
 
 static void startEmulator(JNIEnv *env, jobject surface, jstring path) {
+    env->GetJavaVM(&jvm);
+    globalSurface = env->NewGlobalRef(surface);
     Rom rom(env->GetStringUTFChars(path, 0));
-    gui = new AndroidGUI(env, surface);
+    gui = new AndroidGUI(env, globalSurface);
     Gameboy gameboy(rom, (GUI*) gui);
+    std::thread first (render);
     gameboy.run();
 }
 
