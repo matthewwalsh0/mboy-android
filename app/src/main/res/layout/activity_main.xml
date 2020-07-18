@@ -1,15 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:background="@color/colorPrimary">
 
-    <SurfaceView
-        android:id="@+id/surfaceView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="15dp">
 
-</LinearLayout>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="10dp">
+
+            <SurfaceView
+                android:id="@+id/surfaceView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </androidx.cardview.widget.CardView>
+
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/buttonDpad"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        android:translationZ="10dp"
+        app:srcCompat="@drawable/ic_button_dpad" />
+
+    <ImageButton
+        android:id="@+id/buttonA"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="0dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:paddingLeft="7dp"
+        android:paddingTop="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="15dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_button_a" />
+
+    <ImageButton
+        android:id="@+id/buttonB"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="80dp"
+        android:layout_marginBottom="0dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="15dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_button_b" />
+
+    <ImageButton
+        android:id="@+id/buttonSelect"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="80dp"
+        android:layout_marginBottom="100dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:paddingLeft="20dp"
+        android:paddingTop="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="15dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_button_start_select" />
+
+    <ImageButton
+        android:id="@+id/buttonStart"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="100dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="15dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_button_start_select" />
+
+</FrameLayout>

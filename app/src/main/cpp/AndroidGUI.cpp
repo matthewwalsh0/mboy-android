@@ -78,3 +78,11 @@ void AndroidGUI::render(JNIEnv* env) {
         renderTimer = std::chrono::steady_clock::now();
     }
 }
+
+bool AndroidGUI::isDown(uint8 button) {
+    return buttonsDown[button];
+}
+
+void AndroidGUI::setButtonState(uint8 button, bool state) {
+    buttonsDown[button] = state;
+}

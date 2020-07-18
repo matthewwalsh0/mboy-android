@@ -20,6 +20,7 @@ private:
     unsigned short renderFrameCount = 0;
     oboe::ManagedStream managedStream;
     uint32 pixels[SCREEN_WIDTH * SCREEN_HEIGHT];
+    bool buttonsDown[8] = {[0 ... 7] = false};
 public:
     unsigned short fps = 0;
     unsigned short renderFps = 0;
@@ -27,8 +28,9 @@ public:
     AndroidGUI(JNIEnv *env, jobject surfaceView);
     void displayBuffer(uint32 *pixels);
     void displayFPS(uint16 fps);
+    bool isDown(uint8 button);
     void render(JNIEnv* env);
-
+    void setButtonState(uint8 button, bool state);
 private:
     void playAudio(float *samples, uint16 count) override;
 };

@@ -61,3 +61,12 @@ Java_com_matthew_mboy_MainActivity_getRenderFPS(
         jobject /* this */) {
     return gui != nullptr ? gui->renderFps : 0;
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_MainActivity_setButtonDown(
+        JNIEnv* env,
+        jobject /* this */,
+        jint button,
+        jboolean value) {
+    gui->setButtonState(button, value);
+}
