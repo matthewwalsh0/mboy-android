@@ -24,7 +24,8 @@ static void startEmulator(JNIEnv *env, jobject surface, jstring path) {
     globalSurface = env->NewGlobalRef(surface);
     Rom rom(env->GetStringUTFChars(path, 0));
     gui = new AndroidGUI(env, globalSurface);
-    Gameboy gameboy(rom, (GUI*) gui, nullptr);
+    struct config emulatorConfig;
+    Gameboy gameboy(rom, (GUI*) gui, &emulatorConfig);
     std::thread first (render);
     gameboy.run();
 }

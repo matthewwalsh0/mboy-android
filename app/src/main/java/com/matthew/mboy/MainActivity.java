@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         PERMISSIONS = new ArrayList<String>();
         PERMISSIONS.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         ROM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                "/Tetris (World) (Rev A).gb";
+                "/pokemon_gold.gbc";
 
         System.loadLibrary("native-lib");
     }
