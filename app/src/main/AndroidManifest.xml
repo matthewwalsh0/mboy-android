@@ -13,11 +13,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.matthew.mboy.MainActivity">
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Settings"
+            android:parentActivityName="com.matthew.mboy.MainActivity"
+            android:launchMode="singleInstance">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.matthew.mboy.MainActivity" />
+        </activity>
+        <activity android:name="com.matthew.mboy.MainActivity" android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>

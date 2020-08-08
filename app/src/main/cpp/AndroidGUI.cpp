@@ -83,6 +83,10 @@ bool AndroidGUI::isDown(uint8 button) {
     return buttonsDown[button];
 }
 
+bool AndroidGUI::isOpen() {
+    return running;
+}
+
 void AndroidGUI::setButtonState(uint8 button, bool state) {
     buttonsDown[button] = state;
 }

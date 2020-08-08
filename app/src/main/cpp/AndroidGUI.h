@@ -24,13 +24,16 @@ private:
 public:
     unsigned short fps = 0;
     unsigned short renderFps = 0;
+    bool running = false;
 
     AndroidGUI(JNIEnv *env, jobject surfaceView);
-    void displayBuffer(uint32 *pixels);
-    void displayFPS(uint16 fps);
-    bool isDown(uint8 button);
     void render(JNIEnv* env);
     void setButtonState(uint8 button, bool state);
+
+    void displayBuffer(uint32 *pixels) override;
+    void displayFPS(uint16 fps) override;
+    bool isDown(uint8 button) override;
+    bool isOpen() override;
 private:
     void playAudio(float *samples, uint16 count) override;
 };
