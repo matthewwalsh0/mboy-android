@@ -133,3 +133,63 @@ Java_com_matthew_mboy_Gameboy_setTurbo(
         jboolean value) {
     emulatorConfig->turbo = value;
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setBackgroundEnabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->background = value;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setWindowEnabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->window = value;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setSpritesEnabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->sprites = value;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setSquare1Enabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->square1 = value;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setSquare2Enabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->square2 = value;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setWaveEnabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->wave = value;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_setAudioEnabled(
+        JNIEnv* env,
+        jobject /* this */,
+        jboolean value) {
+    emulatorConfig->audio = value;
+}
+
+
+
+

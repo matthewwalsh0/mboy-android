@@ -26,12 +26,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String KEY_ROM = "rom";
-    private static final String KEY_TURBO = "turbo";
     private static final String ROM_PATH = "%s/MBoy/Roms";
 
     @Override
@@ -71,14 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
-            findPreference(KEY_TURBO).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    SettingsHelper.getInstance(m_context).notifySettingChange(SettingsHelper.Setting.TURBO, newValue);
-                    return true;
-                }
-            });
-
+            SettingsHelper.getInstance(m_context).registerPreferences(this);
             updateROMSummary();
         }
 

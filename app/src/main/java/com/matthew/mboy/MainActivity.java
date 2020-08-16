@@ -22,8 +22,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static com.matthew.mboy.SettingsHelper.Setting.*;
 public class MainActivity extends AppCompatActivity {
 
     private static final List<String> PERMISSIONS;
@@ -69,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
                 (ImageButton) findViewById(R.id.buttonDpad),
                 getSupportActionBar(),
                 displayMetrics)
-                .withOnReady(new Runnable() {
-                    @Override
-                    public void run() {
-                        m_gameboy.setTurbo(m_settingsHelper.getTurbo());
-                    }
-                });
+                    .withOnReady(new Runnable() {
+                        @Override
+                        public void run() {
+                            m_settingsHelper.forceBooleanListeners(Arrays.asList(
+                                    TURBO, BACKGROUND, WINDOW, SPRITES, AUDIO, SQUARE1, SQUARE2, WAVE));
+                        }
+                    })
+                    .withShowFPS(m_settingsHelper.getShowFPS());
 
         final MainActivity context = this;
 
@@ -85,10 +89,66 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.TURBO, new SettingsHelper.OnChangeListener<Boolean>() {
+        m_settingsHelper.withOnChangeListener(TURBO, new SettingsHelper.OnChangeListener<Boolean>() {
             @Override
             public void onChange(Boolean value) {
                 m_gameboy.setTurbo(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.BACKGROUND, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setBackgroundEnabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(WINDOW, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setWindowEnabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.SPRITES, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setSpritesEnabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.AUDIO, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setAudioEnabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.SQUARE1, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setSquare1Enabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.SQUARE2, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setSquare2Enabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.WAVE, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.setWaveEnabled(value);
+            }
+        });
+
+        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.SHOWFPS, new SettingsHelper.OnChangeListener<Boolean>() {
+            @Override
+            public void onChange(Boolean value) {
+                m_gameboy.withShowFPS(value);
             }
         });
 

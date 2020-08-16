@@ -36,9 +36,76 @@
 
         <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
+            app:key="showFPS"
+            app:summary="Display an FPS counter"
+            app:title="Show FPS" />
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
             app:key="turbo"
             app:summary="Disable FPS limit"
             app:title="Turbo" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Display">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="background"
+            app:summary="Draw the background layer"
+            app:title="Background"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="window"
+            app:summary="Draw the window layer"
+            app:title="Window"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="sprites"
+            app:summary="Draw the sprites"
+            app:title="Sprites"
+            app:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="Audio">
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="audio"
+            app:summary="Enable audio emulation"
+            app:title="Enable Sound"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="square1"
+            app:summary="Enable the square 1 audio channel"
+            app:title="Square 1 Channel"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="square2"
+            app:summary="Enable the square 2 audio channel"
+            app:title="Square 2 Channel"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="wave"
+            app:summary="Enable the wave audio channel"
+            app:title="Wave Channel"
+            app:defaultValue="true"/>
 
     </PreferenceCategory>
 

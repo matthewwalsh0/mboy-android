@@ -43,6 +43,13 @@ public class Gameboy {
     private native int nGetRenderFPS();
     private native void nSetButtonDown(int button, boolean state);
     public native void setTurbo(boolean value);
+    public native void setBackgroundEnabled(boolean value);
+    public native void setWindowEnabled(boolean value);
+    public native void setSpritesEnabled(boolean value);
+    public native void setAudioEnabled(boolean value);
+    public native void setSquare1Enabled(boolean value);
+    public native void setSquare2Enabled(boolean value);
+    public native void setWaveEnabled(boolean value);
 
     private SurfaceView m_surfaceView;
     private ImageButton m_buttonDpad;
@@ -51,6 +58,7 @@ public class Gameboy {
     private Thread m_runThread;
     private Thread m_renderThread;
     private Runnable m_onReady;
+    private Boolean m_showFPS;
 
     public Gameboy(final SurfaceView surfaceView, ImageButton buttonA, ImageButton buttonB,
                    ImageButton buttonStart, ImageButton buttonSelect, ImageButton buttonDpad,
@@ -59,6 +67,7 @@ public class Gameboy {
         m_buttonDpad = buttonDpad;
         m_actionBar = actionBar;
         m_started = false;
+        m_showFPS = false;
 
         buttonA.setOnTouchListener(new TouchListener(BUTTON_A));
         buttonB.setOnTouchListener(new TouchListener(BUTTON_B));
@@ -74,6 +83,11 @@ public class Gameboy {
 
     public Gameboy withOnReady(Runnable onReady) {
         m_onReady = onReady;
+        return this;
+    }
+
+    public Gameboy withShowFPS(Boolean value) {
+        m_showFPS = value;
         return this;
     }
 
@@ -161,12 +175,17 @@ public class Gameboy {
     }
 
     private void displayFps(final ActionBar actionBar) {
+        final Gameboy instance = this;
         new android.os.Handler().postDelayed(
             new Runnable() {
                 public void run() {
-                    int fps = nGetFPS();
-                    int renderFps = nGetRenderFPS();
-                    actionBar.setSubtitle("FPS - Game: " + fps + " Screen: " + renderFps);
+                    if(!m_showFPS) {
+                        actionBar.setSubtitle("");
+                    } else {
+                        int fps = nGetFPS();
+                        int renderFps = nGetRenderFPS();
+                        actionBar.setSubtitle("FPS - Game: " + fps + " Screen: " + renderFps);
+                    }
                     displayFps(actionBar);
                 }
             }, FPS_INTERVAL);
