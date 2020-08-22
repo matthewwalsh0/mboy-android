@@ -9,7 +9,6 @@
 
 static AndroidGUI* gui;
 static JavaVM* jvm;
-static jobject globalSurface;
 static Gameboy* gameboy;
 static struct config* emulatorConfig;
 
@@ -18,11 +17,10 @@ static void throwJavaException(JNIEnv* env, std::string message) {
     env->ThrowNew(c, message.c_str());
 }
 
-static void init(JNIEnv *env, jobject surface) {
+static void init(JNIEnv *env) {
     env->GetJavaVM(&jvm);
-    globalSurface = env->NewGlobalRef(surface);
     emulatorConfig = new struct config();
-    gui = new AndroidGUI(env, globalSurface);
+    gui = new AndroidGUI(env);
 }
 
 static void pauseEmulator() {
@@ -62,9 +60,17 @@ static void start(JNIEnv* env, jstring path) {
 extern "C" JNIEXPORT void JNICALL
 Java_com_matthew_mboy_Gameboy_nInit(
         JNIEnv* env,
+        jobject /* this */) {
+    init(env);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_matthew_mboy_Gameboy_nSetSurface(
+        JNIEnv* env,
         jobject /* this */,
         jobject surface) {
-    init(env, surface);
+    jobject globalSurface = env->NewGlobalRef(surface);
+    gui->setSurface(globalSurface);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -104,14 +110,14 @@ Java_com_matthew_mboy_Gameboy_nRender(
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_matthew_mboy_Gameboy_nGetFPS(
+Java_com_matthew_mboy_Gameboy_getFPS(
         JNIEnv* env,
         jobject /* this */) {
     return gui != nullptr ? gui->fps : 0;
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_matthew_mboy_Gameboy_nGetRenderFPS(
+Java_com_matthew_mboy_Gameboy_getRenderFPS(
         JNIEnv* env,
         jobject /* this */) {
     return gui != nullptr ? gui->renderFps : 0;

@@ -26,7 +26,8 @@ public:
     unsigned short renderFps = 0;
     bool running = false;
 
-    AndroidGUI(JNIEnv *env, jobject surfaceView);
+    AndroidGUI(JNIEnv *env);
+    void setSurface(jobject surfaceView);
     void render(JNIEnv* env);
     void setButtonState(uint8 button, bool state);
 

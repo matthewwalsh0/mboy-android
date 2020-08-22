@@ -19,9 +19,8 @@ void AndroidGUI::displayFPS(uint16 fps) {
     this->fps = fps;
 }
 
-AndroidGUI::AndroidGUI(JNIEnv *env, jobject surfaceView) {
+AndroidGUI::AndroidGUI(JNIEnv *env) {
     this->env = env;
-    this->surfaceView = surfaceView;
 
     oboe::AudioStreamBuilder builder;
     builder.setChannelCount(1);
@@ -36,22 +35,27 @@ AndroidGUI::AndroidGUI(JNIEnv *env, jobject surfaceView) {
     managedStream->requestStart();
 }
 
+void AndroidGUI::setSurface(jobject surfaceView) {
+    this->surfaceView = surfaceView;
+}
+
 void AndroidGUI::playAudio(float *samples, uint16 count) {
     managedStream->write(samples, count, 1000000000);
 }
 
 void AndroidGUI::render(JNIEnv* env) {
+    if(!surfaceView) return;
+
     ANativeWindow *window = ANativeWindow_fromSurface(env, surfaceView);
 
     if (NULL == window) {
-        throw std::invalid_argument("unable to get native window");
         return;
     }
 
     int32_t result = ANativeWindow_setBuffersGeometry(window, SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_FORMAT_RGBA_8888);
 
     if (result < 0) {
-        throw std::invalid_argument("unable to set buffers geometry");
+        return;
     }
 
     ANativeWindow_acquire(window);
@@ -60,7 +64,7 @@ void AndroidGUI::render(JNIEnv* env) {
     auto result2 = ANativeWindow_lock(window, &buffer, NULL);
 
     if(result2 < 0) {
-        throw std::invalid_argument("unable to lock native window");
+        return;
     }
 
     memcpy(buffer.bits, this->pixels, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint32));

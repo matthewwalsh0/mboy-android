@@ -16,13 +16,12 @@
         <activity
             android:name=".SettingsActivity"
             android:label="Settings"
-            android:parentActivityName="com.matthew.mboy.MainActivity"
-            android:launchMode="singleInstance">
+            android:parentActivityName="com.matthew.mboy.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.matthew.mboy.MainActivity" />
         </activity>
-        <activity android:name="com.matthew.mboy.MainActivity" android:launchMode="singleInstance">
+        <activity android:name="com.matthew.mboy.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>

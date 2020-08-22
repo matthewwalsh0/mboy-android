@@ -1,26 +1,16 @@
 package com.matthew.mboy;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.util.DisplayMetrics;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +18,9 @@ import java.util.List;
 import static com.matthew.mboy.SettingsHelper.Setting.*;
 public class MainActivity extends AppCompatActivity {
 
+    private static final int FPS_INTERVAL = 1000;
+    private static final String FPS_FORMAT_PORTRAIT = "FPS - Game: %d Screen: %d";
+    private static final String FPS_FORMAT_LANDSCAPE = "FPS\nGame: %d\nScreen: %d";
     private static final List<String> PERMISSIONS;
 
     static {
@@ -39,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private PermissionHelper m_permissionHelper;
     private SettingsHelper m_settingsHelper;
     private Gameboy m_gameboy;
-    private Boolean m_paused;
     private String m_pendingRom;
 
     public MainActivity() {
@@ -51,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         m_settingsHelper = SettingsHelper.getInstance(this);
-        m_paused = false;
     }
 
     @Override
@@ -59,29 +50,132 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        m_gameboy = Application.getInstance().getGameboy();
 
-        m_gameboy = new Gameboy(
-                (SurfaceView) findViewById(R.id.surfaceView),
-                (ImageButton) findViewById(R.id.buttonA),
-                (ImageButton) findViewById(R.id.buttonB),
-                (ImageButton) findViewById(R.id.buttonStart),
-                (ImageButton) findViewById(R.id.buttonSelect),
-                (ImageButton) findViewById(R.id.buttonDpad),
-                getSupportActionBar(),
-                displayMetrics)
-                    .withOnReady(new Runnable() {
-                        @Override
-                        public void run() {
-                            m_settingsHelper.forceBooleanListeners(Arrays.asList(
-                                    TURBO, BACKGROUND, WINDOW, SPRITES, AUDIO, SQUARE1, SQUARE2, WAVE));
-                        }
-                    })
-                    .withShowFPS(m_settingsHelper.getShowFPS());
+        if(m_gameboy == null) {
+            m_gameboy = Application.getInstance().createGameboy()
+                .withOnReady(new Runnable() {
+                    @Override
+                    public void run() {
+                        m_settingsHelper.forceBooleanListeners(Arrays.asList(
+                                TURBO, BACKGROUND, WINDOW, SPRITES, AUDIO, SQUARE1, SQUARE2, WAVE));
+                    }
+                });
+        }
 
         final MainActivity context = this;
 
+        initControls();
+        initSettingListeners();
+
+        GameboyView gameboyView = findViewById(R.id.surfaceView);
+        gameboyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                m_gameboy.pause();
+                Intent intent = new Intent(context, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        TextView fpsText = findViewById(R.id.fps);
+        displayFps(fpsText);
+
+        m_permissionHelper.check();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(m_gameboy != null && m_gameboy.isPaused()) {
+            if(m_pendingRom != null) {
+                m_gameboy.changeRom(m_pendingRom);
+                m_pendingRom = null;
+            } else {
+                m_gameboy.continueEmulator();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        m_permissionHelper.onResult(requestCode, permissions, grantResults);
+    }
+
+    public void onPermissionsGranted() {
+        if(!m_gameboy.isStarted()) {
+            String rom = m_settingsHelper.getROM();
+            m_gameboy.start(rom);
+        }
+
+        m_gameboy.setSurface((SurfaceView) findViewById(R.id.surfaceView));
+    }
+
+    private void initControls() {
+        DpadView dpadView = findViewById(R.id.buttonDpad);
+        DelayedButtonView buttonA = findViewById(R.id.buttonA);
+        DelayedButtonView buttonB = findViewById(R.id.buttonB);
+        DelayedButtonView buttonStart = findViewById(R.id.buttonStart);
+        DelayedButtonView buttonSelect = findViewById(R.id.buttonSelect);
+
+        dpadView.setOnUpListener(new DpadView.DirectionListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_UP, down);
+            }
+        });
+
+        dpadView.setOnDownListener(new DpadView.DirectionListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_DOWN, down);
+            }
+        });
+
+        dpadView.setOnLeftListener(new DpadView.DirectionListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_LEFT, down);
+            }
+        });
+
+        dpadView.setOnRightListener(new DpadView.DirectionListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_RIGHT, down);
+            }
+        });
+
+        buttonA.setListener(new DelayedButtonView.TouchListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_A, down);
+            }
+        });
+
+        buttonB.setListener(new DelayedButtonView.TouchListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_B, down);
+            }
+        });
+
+        buttonStart.setListener(new DelayedButtonView.TouchListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_START, down);
+            }
+        });
+
+        buttonSelect.setListener(new DelayedButtonView.TouchListener() {
+            @Override
+            public void onStateChange(boolean down) {
+                m_gameboy.setButtonDown(Gameboy.BUTTON_SELECT, down);
+            }
+        });
+    }
+
+    private void initSettingListeners() {
         m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.ROM, new SettingsHelper.OnChangeListener<String>() {
             @Override
             public void onChange(String value) {
@@ -144,48 +238,30 @@ public class MainActivity extends AppCompatActivity {
                 m_gameboy.setWaveEnabled(value);
             }
         });
-
-        m_settingsHelper.withOnChangeListener(SettingsHelper.Setting.SHOWFPS, new SettingsHelper.OnChangeListener<Boolean>() {
-            @Override
-            public void onChange(Boolean value) {
-                m_gameboy.withShowFPS(value);
-            }
-        });
-
-        findViewById(R.id.surfaceView).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                m_gameboy.pause();
-                m_paused = true;
-                Intent intent = new Intent(context, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        m_permissionHelper.check();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(m_gameboy != null && m_paused) {
-            if(m_pendingRom != null) {
-                m_gameboy.changeRom(m_pendingRom);
-                m_pendingRom = null;
-            } else {
-                m_gameboy.continueEmulator();
-            }
-            m_paused = false;
-        }
+    private void displayFps(final TextView textView) {
+        new Handler().postDelayed(
+            new Runnable() {
+                public void run() {
+                    if(!m_settingsHelper.getShowFPS()) {
+                        textView.setText("");
+                        textView.setVisibility(View.GONE);
+                    } else {
+                        int fps = m_gameboy.getFPS();
+                        int renderFps = m_gameboy.getRenderFPS();
+                        boolean landscape = isLandscape();
+                        String format = landscape ? FPS_FORMAT_LANDSCAPE : FPS_FORMAT_PORTRAIT;
+                        String text = String.format(format, fps, renderFps);
+                        textView.setText(text);
+                        textView.setVisibility(View.VISIBLE);
+                    }
+                    displayFps(textView);
+                }
+            }, FPS_INTERVAL);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        m_permissionHelper.onResult(requestCode, permissions, grantResults);
-    }
-
-    public void onPermissionsGranted() {
-        String rom = m_settingsHelper.getROM();
-        m_gameboy.start(rom);
+    private boolean isLandscape() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 }
