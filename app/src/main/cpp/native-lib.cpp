@@ -1,16 +1,18 @@
-#include <jni.h>
+#include <thread>
 #include <string>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
+
+#include "jni.h"
+#include "android/native_window.h"
+#include "android/native_window_jni.h"
 #include "Rom.h"
 #include "Gameboy.h"
 #include "AndroidGUI.h"
-#include <thread>
+#include "Config.h"
 
 static AndroidGUI* gui;
 static JavaVM* jvm;
 static Gameboy* gameboy;
-static struct config* emulatorConfig;
+static struct Config* emulatorConfig;
 
 static void throwJavaException(JNIEnv* env, std::string message) {
     jclass c = env->FindClass("com/matthew/mboy/NativeException");
@@ -19,7 +21,7 @@ static void throwJavaException(JNIEnv* env, std::string message) {
 
 static void init(JNIEnv *env) {
     env->GetJavaVM(&jvm);
-    emulatorConfig = new struct config();
+    emulatorConfig = new Config();
     gui = new AndroidGUI(env);
 }
 

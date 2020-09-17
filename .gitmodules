@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/deps/mboy-core"]
+	path = app/src/main/cpp/deps/mboy-core
+	url = git@github.com:matthewwalsh0/mboy-core.git
